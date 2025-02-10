@@ -1,23 +1,18 @@
 pipeline {
-    agent { docker 'docker:20.10.7-dind' }  // Docker-in-Docker agent
-
-    environment {
-        DOCKER_CLI_EXPERIMENTAL = 'enabled'
-    }
+    agent any
 
     stages {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def dockerImage = docker.build("ahemida96/job-portal:${env.BUILD_NUMBER}")
+                    sh "docker build Ahemida96/job-portal:${env.BUILD_NUMBER} ."
                 }
             }
         }
         stage('Push Docker Image') {
             steps {
-                script {
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
-                        dockerImage.push()
+                        sh "docker push Ahemida96/job-portal:${env.BUILD_NUMBER}"
                     }
                 }
             }
