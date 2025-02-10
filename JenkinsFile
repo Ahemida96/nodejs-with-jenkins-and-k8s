@@ -8,7 +8,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build Ahemida96/job-portal:${env.BUILD_NUMBER} ."
+                    sh "docker build -t Ahemida96/job-portal:${env.BUILD_NUMBER} ."
                 }
             }
         }
