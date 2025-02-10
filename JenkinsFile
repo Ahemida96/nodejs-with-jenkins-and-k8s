@@ -11,9 +11,8 @@ pipeline {
         }
         stage('Push Docker Image') {
             steps {
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
-                        sh "docker push Ahemida96/job-portal:${env.BUILD_NUMBER}"
-                    }
+                docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
+                    sh "docker push Ahemida96/job-portal:${env.BUILD_NUMBER}"
                 }
             }
         }
