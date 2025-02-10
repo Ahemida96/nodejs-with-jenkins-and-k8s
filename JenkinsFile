@@ -1,4 +1,4 @@
-# Create a pipeline job to build and push image from dockerfile in the repository
+// Create a pipeline job to build and push image from dockerfile in the repository
 pipeline {
     agent any
     stages {
