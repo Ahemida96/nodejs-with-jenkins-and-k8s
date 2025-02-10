@@ -1,6 +1,10 @@
-// Create a pipeline job to build and push image from dockerfile in the repository
 pipeline {
-    agent any
+    agent { docker 'docker:20.10.7-dind' }  // Docker-in-Docker agent
+
+    environment {
+        DOCKER_CLI_EXPERIMENTAL = 'enabled'
+    }
+
     stages {
         stage('Build Docker Image') {
             steps {
