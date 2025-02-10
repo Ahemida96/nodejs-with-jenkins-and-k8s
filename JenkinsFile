@@ -1,9 +1,5 @@
 pipeline {
     agent any
-    environment {
-        DOCKER_CREDENTIALS = 'dockerhub-credentials'
-    }
-
     stages {
         stage('Build Docker Image') {
             steps {
@@ -14,8 +10,11 @@ pipeline {
         }
         stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]){
-                    sh "docker push Ahemida96/job-portal:${env.BUILD_NUMBER}"
+                withCredentials([usernamePassword(credentialsId: "docker-credintials", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                    sh """
+                    echo $PASSWORD | docker login -u $USERNAME --password-stdin
+                    docker push $USERNAME/job-portal:${env.BUILD_NUMBER}
+                    """
                 }
             }
         }
