@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-portal-deploy
+  labels:
+    name: job-portal-deploy
+    app: job-portal-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: jenkins
+      app: job-portal-app
+  template:
+    metadata:
+      name: jenkins-pod
+      labels:
+        name: jenkins
+        app: job-portal-app
+    spec:
+      securityContext:
+          fsGroup: 1000 
+          runAsUser: 0
+      initContainers:
+      - name: install-docker
+        image: docker:stable
+        command: ["cp", "/usr/local/bin/docker", "/data/docker"]    
+        volumeMounts:
+        - name: docker
+          mountPath: "/data"
+
+      - name: install-kubectl
+        image: eslamkarim/jenkins-ansible-kubectl
+        command: ["cp", "/usr/local/bin/kubectl", "/data/kubectl"]    
+        volumeMounts:
+        - name: kubectl
+          mountPath: "/data"    
+      containers:
+        - name: jenkins
+          image: jenkins/jenkins:lts
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: httpport
+              containerPort: 8080
+            - name: jnlpport
+              containerPort: 50000
+          volumeMounts:
+            - name: docker-sock
+              mountPath: /var/run/docker.sock
+            - name: docker
+              subPath: "docker"
+              mountPath: "/usr/local/bin/docker"
+            - name: kubectl
+              subPath: "kubectl"
+              mountPath: "/usr/local/bin/kubectl"
+      volumes:
+        - name: jenkins-data
+          hostPath:
+            path: /home/jenkins/jenkins-data
+            type: DirectoryOrCreate
+        - name: jenkins-home-volume
+          persistentVolumeClaim:
+            claimName: jenkins-home-pvc
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+            # type: socket
+        - name: docker
+          emptyDir: {}
+        - name: kubectl
+          emptyDir: {}
