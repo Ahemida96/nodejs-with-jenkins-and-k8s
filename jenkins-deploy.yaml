@@ -45,6 +45,8 @@ spec:
             - name: jnlpport
               containerPort: 50000
           volumeMounts:
+            - name: jenkins-home-volume
+              mountPath: "/var/jenkins_home"
             - name: docker-sock
               mountPath: /var/run/docker.sock
             - name: docker
@@ -54,10 +56,6 @@ spec:
               subPath: "kubectl"
               mountPath: "/usr/local/bin/kubectl"
       volumes:
-        - name: jenkins-data
-          hostPath:
-            path: /home/jenkins/jenkins-data
-            type: DirectoryOrCreate
         - name: jenkins-home-volume
           persistentVolumeClaim:
             claimName: jenkins-home-pvc
