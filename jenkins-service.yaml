@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: jenkins-service
+  name: jenkins-http-service
 spec:
   type: NodePort  # Or LoadBalancer
   selector:
@@ -12,6 +12,22 @@ spec:
       port: 8080
       targetPort: 8080
       nodePort: 30000  # Maps to host port 30000 (use 30000-32767)
-    - name: jnlp
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-jnlp-service
+spec:
+  type: NodePort  # Or LoadBalancer
+  selector:
+    name: jenkins
+    app: job-portal-app
+  ports:
+    - name: jnlp # 
       port: 50000
       targetPort: 50000
+      nodePort: 30001  # Maps to host port 30001 (use 30000-32767)
+
+# docker pull jenkins/jnlp-slave
